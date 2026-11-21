@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPANDAMALI JORAM - overFlow services Sarl</title>
+    <style>
+        :root {
+            --brand-red: #c8342a;
+            --brand-red-dark: #a6251d;
+            --brand-green-dark: #1a4718;
+            --brand-green-olive: #6e941e;
+            --brand-charcoal: #2d2e30;
+        }
+
+        .light-theme {
+            --bg-page: #e8e6e1;
+            --bg-card: rgba(255, 255, 255, 0.86);
+            --border-subtle: rgba(45, 46, 48, 0.12);
+            --border-hover: rgba(200, 52, 42, 0.55);
+            --text-primary: #141517;
+            --text-secondary: #53565b;
+            --phone-bg: linear-gradient(180deg, rgba(246, 245, 241, 0.94) 0%, rgba(238, 236, 231, 0.97) 100%);
+            --avatar-bg: linear-gradient(135deg, var(--brand-green-dark) 0%, var(--brand-green-olive) 100%);
+            --avatar-text: #ffffff;
+            --toggle-bg: rgba(200, 52, 42, 0.1);
+            --toggle-color: var(--brand-red);
+            --bg-icon: rgba(200, 52, 42, 0.11);
+            --video-filter: saturate(0.85) brightness(1.02);
+            --video-overlay: rgba(245, 244, 240, 0.52);
+            --btn-share-bg: linear-gradient(135deg, var(--brand-red) 0%, var(--brand-red-dark) 100%);
+            --btn-share-color: #ffffff;
+        }
+
+        .dark-theme {
+            --bg-page: #0c0e0c;
+            --bg-card: rgba(20, 24, 20, 0.78);
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --border-hover: rgba(110, 148, 30, 0.6);
+            --text-primary: #f5f5f3;
+            --text-secondary: #b0b5ad;
+            --phone-bg: linear-gradient(180deg, rgba(18, 22, 18, 0.92) 0%, rgba(11, 14, 11, 0.96) 100%);
+            --avatar-bg: linear-gradient(135deg, var(--brand-red) 0%, var(--brand-green-dark) 100%);
+            --avatar-text: #ffffff;
+            --toggle-bg: rgba(255, 255, 255, 0.08);
+            --toggle-color: #f5f5f3;
+            --bg-icon: rgba(200, 52, 42, 0.18);
+            --video-filter: saturate(0.8) brightness(0.55);
+            --video-overlay: rgba(10, 13, 10, 0.58);
+            --btn-share-bg: linear-gradient(135deg, var(--brand-red) 0%, var(--brand-red-dark) 100%);
+            --btn-share-color: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                        color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.2s ease;
+        }
+
+        body {
+            background: var(--bg-page);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+            color: var(--text-primary);
+        }
+
+        .phone-container {
+            position: relative;
+            width: 100%;
+            max-width: 396px;
+            background: var(--phone-bg);
+            border-radius: 32px;
+            padding: 26px 24px;
+            box-shadow: 0 25px 55px -12px rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .phone-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -36px;
+            width: 110px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--brand-green-olive) 0%, var(--brand-green-dark) 55%, var(--brand-green-olive) 100%);
+            opacity: 0.14;
+            transform: skewX(-12deg);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .phone-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--brand-red) 0%, var(--brand-red) 58%, var(--brand-green-dark) 58%, var(--brand-green-dark) 82%, var(--brand-green-olive) 82%, var(--brand-green-olive) 100%);
+        }
+
+        .bg-video-layer {
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: var(--video-filter);
+        }
+
+        .bg-video-overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--video-overlay);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 22px;
+            right: 22px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid var(--border-subtle);
+            background: var(--toggle-bg);
+            color: var(--toggle-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.06);
+            border-color: var(--border-hover);
+        }
+
+        .theme-toggle svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .badge-company {
+            background: var(--bg-card);
+            border: 1px solid rgba(200, 52, 42, 0.35);
+            color: var(--text-primary);
+            font-size: 9.5px;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 100px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            letter-spacing: 0.8px;
+        }
+
+        .dot-company {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--brand-red);
+            box-shadow: 0 0 0 2px rgba(110, 148, 30, 0.35);
+        }
+
+        .user-photo-container {
+            width: 98px;
+            height: 98px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, var(--brand-red) 0%, var(--brand-green-olive) 55%, var(--brand-green-dark) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 12px 24px -6px rgba(26, 71, 24, 0.35);
+        }
+
+        .user-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            border-radius: 50%;
+            display: block;
+            background: #ffffff;
+        }
+
+        .user-photo-fallback {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--avatar-bg);
+            color: var(--avatar-text);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            font-size: 24px;
+            letter-spacing: -0.3px;
+        }
+
+        .company-info h1 {
+            color: var(--text-primary);
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+        }
+
+        .company-tagline {
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 3px;
+            letter-spacing: 0.2px;
+        }
+
+        .profile-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 22px;
+            padding: 15px 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .profile-role-badge {
+            color: var(--brand-red);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            border-bottom: 2px solid var(--brand-red);
+            padding-bottom: 2px;
+        }
+
+        .profile-name {
+            color: var(--text-primary);
+            font-size: 15.5px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .section-title {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 2px;
+        }
+
+        .links-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .link-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .icon-wrapper {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: var(--bg-icon);
+            color: var(--brand-red);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+
+        .icon-wrapper svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .link-content {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .link-label {
+            color: var(--text-secondary);
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 2px;
+        }
+
+        .link-value {
+            color: var(--text-primary);
+            font-size: 13.5px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .arrow-right {
+            color: var(--text-secondary);
+            font-size: 11px;
+            opacity: 0.45;
+            margin-left: 8px;
+        }
+
+        /* Sélection colorée dédiée à chaque canal */
+        .link-item.channel-phone:hover,
+        .link-item.channel-phone:focus-visible,
+        .link-item.channel-phone.active {
+            background: rgba(200, 52, 42, 0.16);
+            border-color: var(--brand-red);
+            box-shadow: 0 8px 20px -6px rgba(200, 52, 42, 0.35);
+            transform: translateY(-2px);
+        }
+        .link-item.channel-phone:hover .icon-wrapper,
+        .link-item.channel-phone:focus-visible .icon-wrapper,
+        .link-item.channel-phone.active .icon-wrapper {
+            background: var(--brand-red);
+            color: #ffffff;
+        }
+        .link-item.channel-phone:hover .link-label,
+        .link-item.channel-phone:focus-visible .link-label,
+        .link-item.channel-phone.active .link-label,
+        .link-item.channel-phone:hover .arrow-right,
+        .link-item.channel-phone:focus-visible .arrow-right,
+        .link-item.channel-phone.active .arrow-right {
+            color: var(--brand-red);
+            opacity: 1;
+            transform: translateX(3px);
+        }
+
+        .link-item.channel-whatsapp:hover,
+        .link-item.channel-whatsapp:focus-visible,
+        .link-item.channel-whatsapp.active {
+            background: rgba(110, 148, 30, 0.18);
+            border-color: var(--brand-green-olive);
+            box-shadow: 0 8px 20px -6px rgba(110, 148, 30, 0.35);
+            transform: translateY(-2px);
+        }
+        .link-item.channel-whatsapp:hover .icon-wrapper,
+        .link-item.channel-whatsapp:focus-visible .icon-wrapper,
+        .link-item.channel-whatsapp.active .icon-wrapper {
+            background: var(--brand-green-olive);
+            color: #ffffff;
+        }
+        .link-item.channel-whatsapp:hover .link-label,
+        .link-item.channel-whatsapp:focus-visible .link-label,
+        .link-item.channel-whatsapp.active .link-label,
+        .link-item.channel-whatsapp:hover .arrow-right,
+        .link-item.channel-whatsapp:focus-visible .arrow-right,
+        .link-item.channel-whatsapp.active .arrow-right {
+            color: var(--brand-green-olive);
+            opacity: 1;
+            transform: translateX(3px);
+        }
+
+        .link-item.channel-email:hover,
+        .link-item.channel-email:focus-visible,
+        .link-item.channel-email.active {
+            background: rgba(200, 52, 42, 0.16);
+            border-color: var(--brand-red);
+            box-shadow: 0 8px 20px -6px rgba(200, 52, 42, 0.35);
+            transform: translateY(-2px);
+        }
+        .link-item.channel-email:hover .icon-wrapper,
+        .link-item.channel-email:focus-visible .icon-wrapper,
+        .link-item.channel-email.active .icon-wrapper {
+            background: var(--brand-red);
+            color: #ffffff;
+        }
+        .link-item.channel-email:hover .link-label,
+        .link-item.channel-email:focus-visible .link-label,
+        .link-item.channel-email.active .link-label,
+        .link-item.channel-email:hover .arrow-right,
+        .link-item.channel-email:focus-visible .arrow-right,
+        .link-item.channel-email.active .arrow-right {
+            color: var(--brand-red);
+            opacity: 1;
+            transform: translateX(3px);
+        }
+
+        .link-item.channel-save {
+            border-style: dashed;
+            border-color: rgba(26, 71, 24, 0.45);
+        }
+        .link-item.channel-save:hover,
+        .link-item.channel-save:focus-visible,
+        .link-item.channel-save.active {
+            background: rgba(26, 71, 24, 0.18);
+            border-color: var(--brand-green-dark);
+            border-style: solid;
+            box-shadow: 0 8px 20px -6px rgba(26, 71, 24, 0.35);
+            transform: translateY(-2px);
+        }
+        .link-item.channel-save:hover .icon-wrapper,
+        .link-item.channel-save:focus-visible .icon-wrapper,
+        .link-item.channel-save.active .icon-wrapper {
+            background: var(--brand-green-dark);
+            color: #ffffff;
+        }
+        .link-item.channel-save:hover .link-label,
+        .link-item.channel-save:focus-visible .link-label,
+        .link-item.channel-save.active .link-label,
+        .link-item.channel-save:hover .arrow-right,
+        .link-item.channel-save:focus-visible .arrow-right,
+        .link-item.channel-save.active .arrow-right {
+            color: var(--brand-green-dark);
+            opacity: 1;
+            transform: translateX(3px);
+        }
+
+        .footer-buttons {
+            margin-top: 2px;
+        }
+
+        .btn-share {
+            width: 100%;
+            padding: 14px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--btn-share-bg);
+            color: var(--btn-share-color);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 20px -6px rgba(200, 52, 42, 0.45);
+        }
+
+        .btn-share:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px -6px rgba(200, 52, 42, 0.6);
+        }
+    </style>
+</head>
+<body class="light-theme">
+
+    <div class="phone-container">
+
+        <!-- Vidéo en arrière-plan (lecture automatique continue) -->
+        <div class="bg-video-layer" aria-hidden="true">
+            <video class="bg-video" id="bgVideo" autoplay loop muted playsinline></video>
+        </div>
+        <div class="bg-video-overlay" aria-hidden="true"></div>
+
+        <button class="theme-toggle" id="themeToggleBtn" aria-label="Changer le thème" title="Changer de thème">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-12.37c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41zm-12.37 12.37c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41z"/>
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.3 22h-.1c-5.5 0-10-4.5-10-10 0-4.8 3.5-8.9 8.3-9.7.7-.1 1.3.4 1.4 1.1.1.7-.4 1.3-1.1 1.4-3.5.6-6 3.6-6 7.2 0 4.1 3.4 7.5 7.5 7.5 3.6 0 6.6-2.5 7.2-6 .1-.7.8-1.2 1.5-1.1.7.1 1.2.8 1.1 1.5-.8 4.8-4.9 8.3-9.7 8.3z"/>
+            </svg>
+        </button>
+
+        <header class="header">
+            <div class="badge-company">
+                <span class="dot-company"></span>
+                <span id="txtSocieteBadge">overFlow services Sarl</span>
+            </div>
+
+            <div class="user-photo-container">
+                <img src="" alt="MPANDAMALI JORAM" class="user-photo" id="userPhoto">
+                <div class="user-photo-fallback" id="userPhotoFallback">MJ</div>
+            </div>
+
+            <div class="company-info">
+                <h1 id="txtNomHeader">MPANDAMALI JORAM</h1>
+                <p class="company-tagline" id="txtSocieteTagline">overFlow services Sarl</p>
+            </div>
+        </header>
+
+        <section class="profile-card">
+            <div class="profile-role-badge" id="txtPoste">CEO</div>
+            <h2 class="profile-name" id="txtNomCarte">MPANDAMALI JORAM</h2>
+        </section>
+
+        <div class="section-title">Contact Direct</div>
+
+        <nav class="links-list">
+
+            <!-- Téléphone -->
+            <a href="#" class="link-item channel-phone" id="btnTelephone">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                </div>
+                <div class="link-content">
+                    <div class="link-label">Téléphone</div>
+                    <div class="link-value" id="txtTelephone">...</div>
+                </div>
+                <div class="arrow-right">➔</div>
+            </a>
+
+            <!-- WhatsApp -->
+            <a href="#" target="_blank" rel="noopener noreferrer" class="link-item channel-whatsapp" id="btnWhatsapp">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.413 9.863-9.843.001-2.63-1.023-5.101-2.884-6.965C16.566 1.933 14.095 1.01 11.472 1.01c-5.442 0-9.866 4.415-9.87 9.845-.001 1.77.46 3.497 1.334 5.025l-.995 3.638 3.71-.973zm13.114-6.306c-.303-.151-1.793-.883-2.073-.984-.279-.102-.483-.152-.686.152-.204.304-.787.984-.965 1.186-.177.202-.355.228-.658.077-.303-.152-1.28-.472-2.438-1.503-.9-.802-1.507-1.793-1.684-2.097-.177-.302-.018-.467.133-.617.136-.134.303-.354.455-.531.152-.177.202-.303.303-.506.102-.203.051-.38-.025-.531-.076-.152-.686-1.654-.939-2.261-.247-.594-.499-.514-.686-.524-.177-.008-.38-.01-.583-.01-.203 0-.533.076-.813.38-.28.304-1.067 1.039-1.067 2.535s1.092 2.94 1.244 3.143c.152.203 2.15 3.284 5.21 4.602.727.314 1.295.5 1.738.641.73.232 1.393.197 1.918.12.584-.085 1.793-.733 2.047-1.443.254-.71.254-1.317.177-1.443-.077-.126-.28-.203-.584-.354z"/></svg>
+                </div>
+                <div class="link-content">
+                    <div class="link-label">WhatsApp</div>
+                    <div class="link-value" id="txtWhatsapp">...</div>
+                </div>
+                <div class="arrow-right">➔</div>
+            </a>
+
+            <!-- Email -->
+            <a href="#" class="link-item channel-email" id="btnEmail">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                </div>
+                <div class="link-content">
+                    <div class="link-label">Email</div>
+                    <div class="link-value" id="txtEmail">...</div>
+                </div>
+                <div class="arrow-right">➔</div>
+            </a>
+
+            <!-- Enregistrer Contact (vCard) -->
+            <button class="link-item channel-save" id="btnEnregistrer">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2v9.67z"/></svg>
+                </div>
+                <div class="link-content">
+                    <div class="link-label">Enregistrer</div>
+                    <div class="link-value">Ajouter aux contacts</div>
+                </div>
+                <div class="arrow-right">➔</div>
+            </button>
+
+        </nav>
+
+        <footer class="footer-buttons">
+            <button class="btn-share" id="btnActionPartager">
+                Partager la carte
+            </button>
+        </footer>
+
+    </div>
+
+    <script>
+        const donneesCarte = {
+            nomComplet: "MPANDAMALI JORAM",
+            prenom: "JORAM",
+            nom: "MPANDAMALI",
+            poste: "CEO",
+            societe: "overFlow services Sarl",
+            telephoneRaw: "+243975866170",
+            telephoneFormate: "+243 975 866 170",
+            email: "joramkipembwe@gmail.com",
+            // Mettez ici le nom de votre fichier photo ou son lien direct
+            photo: "JORAM.jpg",
+            // Mettez ici le nom de votre fichier vidéo d'arrière-plan ou son lien direct
+            videoFond: "arriere-plan.mp4"
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("txtSocieteBadge").textContent = donneesCarte.societe;
+            document.getElementById("txtNomHeader").textContent = donneesCarte.nomComplet;
+            document.getElementById("txtSocieteTagline").textContent = donneesCarte.societe;
+            document.getElementById("txtPoste").textContent = donneesCarte.poste;
+            document.getElementById("txtNomCarte").textContent = donneesCarte.nomComplet;
+
+            // Photo de profil définie dans le code
+            const userPhoto = document.getElementById("userPhoto");
+            const userPhotoFallback = document.getElementById("userPhotoFallback");
+            const initiales = ((donneesCarte.prenom?.[0] || "") + (donneesCarte.nom?.[0] || "")).toUpperCase() || "MJ";
+            userPhotoFallback.textContent = initiales;
+
+            const afficherRepli = () => {
+                userPhoto.style.display = "none";
+                userPhotoFallback.style.display = "flex";
+            };
+
+            if (donneesCarte.photo && donneesCarte.photo.trim() !== "") {
+                userPhoto.addEventListener("error", afficherRepli);
+                userPhoto.addEventListener("load", () => {
+                    if (userPhoto.naturalWidth > 0) {
+                        userPhotoFallback.style.display = "none";
+                        userPhoto.style.display = "block";
+                    } else {
+                        afficherRepli();
+                    }
+                });
+                userPhoto.src = donneesCarte.photo.trim();
+                userPhoto.alt = donneesCarte.nomComplet;
+            } else {
+                afficherRepli();
+            }
+
+            // Vidéo d'arrière-plan en lecture automatique
+            const bgVideo = document.getElementById("bgVideo");
+            if (donneesCarte.videoFond && donneesCarte.videoFond.trim() !== "") {
+                bgVideo.src = donneesCarte.videoFond.trim();
+                bgVideo.muted = true;
+                bgVideo.loop = true;
+                bgVideo.playsInline = true;
+                bgVideo.play().catch(() => {});
+            }
+
+            // Sélection active colorée dédiée à chaque canal
+            const channelItems = document.querySelectorAll(".links-list .link-item[id^='btn']");
+            const setActiveChannel = (activeEl) => {
+                channelItems.forEach((el) => el.classList.remove("active"));
+                if (activeEl) {
+                    activeEl.classList.add("active");
+                }
+            };
+
+            channelItems.forEach((item) => {
+                item.addEventListener("pointerdown", () => setActiveChannel(item));
+                item.addEventListener("focus", () => setActiveChannel(item));
+            });
+
+            document.getElementById("btnTelephone").href = `tel:${donneesCarte.telephoneRaw}`;
+            document.getElementById("txtTelephone").textContent = donneesCarte.telephoneFormate;
+
+            document.getElementById("btnWhatsapp").href = `https://wa.me/${donneesCarte.telephoneRaw.replace('+', '')}`;
+            document.getElementById("txtWhatsapp").textContent = donneesCarte.telephoneFormate;
+
+            document.getElementById("btnEmail").href = `mailto:${donneesCarte.email}`;
+            document.getElementById("txtEmail").textContent = donneesCarte.email;
+
+            // Téléchargement vCard
+            const btnEnregistrer = document.getElementById("btnEnregistrer");
+            btnEnregistrer.addEventListener("click", () => {
+                setActiveChannel(btnEnregistrer);
+                const vcard = `BEGIN:VCARD\n` +
+                              `VERSION:3.0\n` +
+                              `N:${donneesCarte.nom};${donneesCarte.prenom};;;\n` +
+                              `FN:${donneesCarte.nomComplet}\n` +
+                              `ORG:${donneesCarte.societe}\n` +
+                              `TITLE:${donneesCarte.poste}\n` +
+                              `TEL;TYPE=CELL,VOICE:${donneesCarte.telephoneRaw}\n` +
+                              `EMAIL;TYPE=PREF,INTERNET:${donneesCarte.email}\n` +
+                              `END:VCARD`;
+
+                const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `MPANDAMALI_JORAM.vcf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+
+            // Partage natif
+            const btnPartager = document.getElementById("btnActionPartager");
+            btnPartager.addEventListener("click", async () => {
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: `${donneesCarte.nomComplet} — ${donneesCarte.societe}`,
+                            text: `${donneesCarte.nomComplet} (${donneesCarte.poste}) • ${donneesCarte.societe}`,
+                            url: window.location.href
+                        });
+                    } catch (err) {}
+                } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert("Lien copié dans le presse-papier !");
+                }
+            });
+
+            // Bascule thème clair / sombre
+            const themeToggleBtn = document.getElementById("themeToggleBtn");
+            const body = document.body;
+            const iconSun = themeToggleBtn.querySelector(".icon-sun");
+            const iconMoon = themeToggleBtn.querySelector(".icon-moon");
+
+            themeToggleBtn.addEventListener("click", () => {
+                if (body.classList.contains("light-theme")) {
+                    body.classList.replace("light-theme", "dark-theme");
+                    iconSun.style.display = "block";
+                    iconMoon.style.display = "none";
+                } else {
+                    body.classList.replace("dark-theme", "light-theme");
+                    iconSun.style.display = "none";
+                    iconMoon.style.display = "block";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
